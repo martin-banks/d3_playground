@@ -4,7 +4,8 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "build": "webpack --watch --progress --colors"
+    "build": "webpack --watch --progress --colors",
+    "server": "http-server -o"
   },
   "repository": {
     "type": "git",
