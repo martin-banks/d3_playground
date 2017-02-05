@@ -16605,11 +16605,17 @@ var link = svg.selectAll(".link").data(bilinks).enter().append("path").attr("cla
 
 var node = svg.selectAll(".node").data(nodes.filter(function (d) {
   return d.id;
-})).enter().append("circle").attr("class", "node").attr("r", 20).attr("fill", function (d) {
-  return color(d.group);
-}).call(d3.drag().on("start", dragstarted).on("drag", dragged).on("end", dragended));
+})).enter().append("g").attr("class", "node").attr('fill', '#ccc').call(d3.drag().on("start", dragstarted).on("drag", dragged).on("end", dragended));
 
 node.append("title").text(function (d) {
+  return d.id;
+});
+
+node.append('circle').attr("r", 20).attr("fill", function (d) {
+  return color(d.group);
+}).attr("x", "10px").attr("y", "-15px").call(d3.drag().on("start", dragstarted).on("drag", dragged).on("end", dragended));
+/*text must be added t ogroup element "g" to be visible*/
+node.append("text").attr('class', 'nodeText').attr("x", 0).attr("y", "40px").text(function (d) {
   return d.id;
 });
 

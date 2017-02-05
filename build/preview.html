@@ -9,13 +9,23 @@
 	<title>Preview</title>
 	<style>
 		.node {
-			stroke: #fff;
-			stroke-width: 1.5px;
+			stroke: red;
+			stroke-width: 5px;
+			margin: 24px;
 		}
 
 		.link {
 			fill: none;
 			stroke: #bbb;
+		}
+		.node text, .nodeText {
+			pointer-events: none;
+			font: 20px sans-serif;
+			color: red;
+			text-align: center;
+			stroke: none;
+			padding: 16px;
+			border: solid 1px #000;
 		}
 	</style>
 </head>

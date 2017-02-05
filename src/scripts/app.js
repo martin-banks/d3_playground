@@ -39,10 +39,9 @@ let link = svg.selectAll(".link")
 
 let node = svg.selectAll(".node")
   .data(nodes.filter(d => d.id ))
-  .enter().append("circle")
+  .enter().append("g")
     .attr("class", "node")
-    .attr("r", 20)
-    .attr("fill", d => color(d.group) )
+    .attr('fill', '#ccc')
     .call(d3.drag()
         .on("start", dragstarted)
         .on("drag", dragged)
@@ -51,12 +50,29 @@ let node = svg.selectAll(".node")
 node.append("title")
     .text(d => d.id )
 
+node.append('circle')
+  .attr("r", 20)
+    .attr("fill", d => color(d.group) )
+    .attr("x", "10px")
+    .attr("y", "-15px")
+    .call(d3.drag()
+        .on("start", dragstarted)
+        .on("drag", dragged)
+        .on("end", dragended))
+/*text must be added t ogroup element "g" to be visible*/
+node.append("text")
+  .attr('class', 'nodeText')
+  .attr("x", 0)
+  .attr("y", "40px")
+  .text(function(d) { return d.id });
+
 simulation
     .nodes(nodes)
     .on("tick", ticked)
 
 simulation.force("link")
     .links(links)
+
 
 
 
