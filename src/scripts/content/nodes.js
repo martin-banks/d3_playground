@@ -1,17 +1,21 @@
 const nodes = [
 	{
-		"id": "first", 
-		"group": 0
+		id: 'central',
+		group: 0
 	},
 	{
-		"id": "second", 
-		"group": 1
+		"id": "chapterA", 
+		"group": 9
 	},
 	{
-		"id": "third", 
-		"group": 2
+		"id": "chapterB", 
+		"group": 8
+	},
+	{
+		"id": "chapterC", 
+		"group": 7
 	},
 	
 ]
 
-export {nodes}
+export { nodes }

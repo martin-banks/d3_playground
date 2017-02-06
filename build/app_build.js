@@ -16520,12 +16520,16 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 var links = [{
-	"source": "first",
-	"target": "second",
+	"source": 'central',
+	"target": 'chapterA',
 	"value": 1
 }, {
-	"source": "first",
-	"target": "third",
+	"source": 'central',
+	"target": 'chapterB',
+	"value": 1
+}, {
+	"source": 'central',
+	"target": 'chapterC',
 	"value": 1
 }];
 
@@ -16542,14 +16546,17 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 var nodes = [{
-	"id": "first",
-	"group": 0
+	id: 'central',
+	group: 0
 }, {
-	"id": "second",
-	"group": 1
+	"id": "chapterA",
+	"group": 9
 }, {
-	"id": "third",
-	"group": 2
+	"id": "chapterB",
+	"group": 8
+}, {
+	"id": "chapterC",
+	"group": 7
 }];
 
 exports.nodes = nodes;
@@ -16576,66 +16583,217 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
-console.log('first data log', _manifest.data);
-var svg = d3.select("svg"),
-    width = +svg.attr("width"),
-    height = +svg.attr("height");
+var svg = d3.select("svg");
+svg.attr('width', window.innerWidth).attr('height', window.innerHeight);
+var width = +svg.attr("width");
+var height = +svg.attr("height");
+var color = d3.scaleOrdinal(d3.schemeCategory10);
 
-var color = d3.scaleOrdinal(d3.schemeCategory20);
+/*let a = {id: "a"}
+let b = {id: "b"}
+let c = {id: "c"}*/
+var newNodes = {
+  chapterA: [{
+    id: "extra1A",
+    group: 9
+  }, {
+    id: "extra2A",
+    group: 9
+  }, {
+    id: "extra3A",
+    group: 9
+  }],
 
-var simulation = d3.forceSimulation().force("link", d3.forceLink().distance(100).strength(0.5)).force("charge", d3.forceManyBody()).force("center", d3.forceCenter(width / 2, height / 2));
+  chapterB: [{
+    id: "extra1B",
+    group: 8
+  }, {
+    id: "extra2B",
+    group: 8
+  }, {
+    id: "extra3B",
+    group: 8
+  }],
 
-var nodes = _manifest.data.nodes,
-    nodeById = d3.map(nodes, function (d) {
+  chapterC: [{
+    id: "extra1C",
+    group: 7
+  }, {
+    id: "extra2C",
+    group: 7
+  }, {
+    id: "extra3C",
+    group: 7
+  }]
+
+};
+var newLinks = {
+
+  chapterA: [{
+    "source": 'chapterA',
+    "target": 'extra1A',
+    "value": 1
+  }, {
+    "source": 'chapterA',
+    "target": 'extra2A',
+    "value": 1
+  }, {
+    "source": 'chapterA',
+    "target": 'extra3A',
+    "value": 1
+  }],
+  chapterB: [{
+    "source": 'chapterB',
+    "target": 'extra1B',
+    "value": 1
+  }, {
+    "source": 'chapterB',
+    "target": 'extra2B',
+    "value": 1
+  }, {
+    "source": 'chapterB',
+    "target": 'extra3B',
+    "value": 1
+  }],
+  chapterC: [{
+    "source": 'chapterC',
+    "target": 'extra1C',
+    "value": 1
+  }, {
+    "source": 'chapterC',
+    "target": 'extra2C',
+    "value": 1
+  }, {
+    "source": 'chapterC',
+    "target": 'extra3C',
+    "value": 1
+  }]
+
+};
+
+var nodes = _manifest.data.nodes;
+var nodeById = d3.map(nodes, function (d) {
   return d.id;
-}),
-    links = _manifest.data.links,
-    bilinks = [];
+});
+var links = _manifest.data.links;
+var bilinks = [];
 
 links.forEach(function (link) {
-  var s = link.source = nodeById.get(link.source),
-      t = link.target = nodeById.get(link.target),
-      i = {}; // intermediate node
-  nodes.push(i);
-  links.push({ source: s, target: i }, { source: i, target: t });
-  bilinks.push([s, i, t]);
+  //console.log('foreach link', link)
+  if (!!link.target && !!link.target) {
+    var s = link.source = nodeById.get(link.source);
+    var t = link.target = nodeById.get(link.target);
+    var i = {}; // intermediate node
+    // console.log('s', s, '\nt', t, '\ni', i)
+    nodes.push(i);
+    //links.push({source: s, target: i}, {source: i, target: t})
+    bilinks.push([s, i, t]);
+  }
 });
 
-var link = svg.selectAll(".link").data(bilinks).enter().append("path").attr("class", "link");
+/*start force linked chart and set options*/
+var simulation = d3.forceSimulation(nodes).force("charge", d3.forceManyBody().strength(-1000)).force("link", d3.forceLink(links).distance(200).strength(0.5)).force("x", d3.forceX()).force("y", d3.forceY()).alphaTarget(1).on("tick", ticked);
 
-var node = svg.selectAll(".node").data(nodes.filter(function (d) {
-  return d.id;
-})).enter().append("g").attr("class", "node").attr('fill', '#ccc').call(d3.drag().on("start", dragstarted).on("drag", dragged).on("end", dragended));
+/*add style attributes*/
+var g = svg.append("g").attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 
-node.append("title").text(function (d) {
-  return d.id;
-});
+/*add style attributes*/
+var link = g.append("g").attr("stroke", "#000").attr("stroke-width", 1.5).selectAll(".link");
 
-node.append('circle').attr("r", 20).attr("fill", function (d) {
-  return color(d.group);
-}).attr("x", "10px").attr("y", "-15px").call(d3.drag().on("start", dragstarted).on("drag", dragged).on("end", dragended));
-/*text must be added t ogroup element "g" to be visible*/
-node.append("text").attr('class', 'nodeText').attr("x", 0).attr("y", "40px").text(function (d) {
-  return d.id;
-});
+/*add style attributes*/
+var node = g.append("g").attr("stroke", "#fff").attr("stroke-width", 1.5).selectAll(".node");
 
-simulation.nodes(nodes).on("tick", ticked);
+restart();
 
-simulation.force("link").links(links);
+function addTestNode() {
+  simulation.on("tick", ticked);
+  //console.log('this node', d3.select(this).attr('id'))
+  var newId = d3.select(this).attr('id');
 
-function ticked() {
-  link.attr("d", positionLink);
-  node.attr("transform", positionNode);
+  newNodes[newId].map(function (newNode) {
+    nodes.push(newNode);
+  });
+  nodeById = d3.map(nodes, function (d) {
+    return d.id;
+  });
+
+  //let addLinks = newLinks[newId]
+  newLinks[newId].map(function (addLink) {
+    //console.log('addLink', addLink)
+
+    var s = addLink.source = nodeById.get(addLink.source);
+    var t = addLink.target = nodeById.get(addLink.target);
+    var i = {}; // intermediate node
+    //console.log('s', s, '\nt', t, '\ni', i)
+    nodes.push(i);
+    bilinks.push([s, i, t]);
+
+    links.push(addLink);
+  });
+
+  console.log('restarting chart');
+  restart();
 }
 
-function positionLink(d) {
-  return "M" + d[0].x + "," + d[0].y + "S" + d[1].x + "," + d[1].y + " " + d[2].x + "," + d[2].y;
+function restart() {
+  /*render node and add content elements and attributes*/
+  node = node.data(nodes.filter(function (d) {
+    return d.id;
+  })).enter().append("text").attr('class', 'nodeText').attr("x", '10px').attr("y", 0).text(function (d) {
+    return d.id;
+  }).attr("fill", function (data) {
+    return color(data.group);
+  })
+  /*.append("circle")
+  
+  .attr("r", 8)*/
+  .attr('id', function (d) {
+    return d.id;
+  }).call(d3.drag().on("start", dragstarted).on("drag", dragged).on("end", dragended)).on('click', addTestNode).merge(node);
+
+  // Apply the general update pattern to the links.
+  link = link.data(links, function (d) {
+    //console.log('d', d)
+    return d.source.id + "-" + d.target.id;
+  });
+  link.exit().remove();
+  link = link.enter().append("line").merge(link);
+
+  // Update and restart the simulation.
+  simulation.nodes(nodes);
+
+  simulation.force("link").links(links);
+
+  simulation.alpha(1).restart();
+
+  /*setTimeout(function() {
+    simulation.on("tick", null)
+  }, 2000);*/
+
+  //console.log('nodes:', nodes, '\nlinks:', links)
+}
+
+function ticked() {
+  /*node.attr( "cx", d => d.x )
+      .attr( "cy", d => d.y )*/
+  node.attr("transform", positionNode);
+
+  link.attr("x1", function (d) {
+    return d.source.x;
+  }).attr("y1", function (d) {
+    return d.source.y;
+  }).attr("x2", function (d) {
+    return d.target.x;
+  }).attr("y2", function (d) {
+    return d.target.y;
+  });
 }
 
 function positionNode(d) {
   return "translate(" + d.x + "," + d.y + ")";
 }
 
+/* node drag functions */
 function dragstarted(d) {
   if (!d3.event.active) simulation.alphaTarget(0.3).restart();
   d.fx = d.x, d.fy = d.y;

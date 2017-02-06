@@ -1,14 +1,20 @@
 const links = [
 	{
-		"source": "first",
-		"target": "second",
+		"source": 'central',
+		"target": 'chapterA',
 		"value": 1
 	},
 	{
-		"source": "first",
-		"target": "third",
+		"source": 'central',
+		"target": 'chapterB',
 		"value": 1
-	}
+	},
+	{
+		"source": 'central',
+		"target": 'chapterC',
+		"value": 1
+	},
+	
 	
 ]
 

@@ -8,6 +8,10 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>Preview</title>
 	<style>
+		html, body {
+			padding: 0;
+			margin: 0;
+		}
 		.node {
 			stroke: red;
 			stroke-width: 5px;
@@ -19,7 +23,8 @@
 			stroke: #bbb;
 		}
 		.node text, .nodeText {
-			pointer-events: none;
+			/* pointer-events: none; */
+			cursor: pointer;
 			font: 20px sans-serif;
 			color: red;
 			text-align: center;
